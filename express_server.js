@@ -7,6 +7,9 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+// Tells Express app to use EJS as its templating engine
+app.set("view engine", "ejs");
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
