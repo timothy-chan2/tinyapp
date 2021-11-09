@@ -11,7 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/timothy-chan2/tinyapp.git"
   },
-  "keywords": ["shorten", "URL", "node", "express"],
+  "keywords": [
+    "shorten",
+    "URL",
+    "node",
+    "express"
+  ],
   "author": "Timothy Chan (timothy.chan2@mail.mcgill.ca)",
   "license": "ISC",
   "bugs": {
@@ -19,6 +24,7 @@
   },
   "homepage": "https://github.com/timothy-chan2/tinyapp#readme",
   "dependencies": {
+    "cookie-parser": "^1.4.5",
     "ejs": "^3.1.6",
     "express": "^4.17.1"
   },
