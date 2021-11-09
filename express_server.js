@@ -22,7 +22,7 @@ const generateRandomString = () => {
     } else {
       // Lowercase letters
       shortURL += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
-    }  
+    }
   }
 
   return shortURL;
