@@ -7,6 +7,27 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const generateRandomString = () => {
+  let shortURL = "";
+
+  for (let i = 0; i < 6; i++) {
+    // Random number: 0, 1, or 2
+    let rand = Math.floor(Math.random() * 3);
+    
+    if (rand === 0) {
+      shortURL += Math.floor(Math.random() * 9);
+    } else if (rand === 1) {
+      // Uppercase letters
+      shortURL += String.fromCharCode(Math.floor((Math.random() * 26) + 65));
+    } else {
+      // Lowercase letters
+      shortURL += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
+    }  
+  }
+
+  return shortURL;
+};
+
 // Tells Express app to use EJS as its templating engine
 app.set("view engine", "ejs");
 
