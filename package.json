@@ -2,16 +2,17 @@
   "name": "tinyapp",
   "version": "1.0.0",
   "description": "A full stack web app built with Node and Express that allows users to shorten long URLs",
-  "main": "index.js",
+  "main": "express_server.js",
   "scripts": {
+    "start": "./node_modules/.bin/nodemon -L express_server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/timothy-chan2/tinyapp.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["shorten", "URL", "node", "express"],
+  "author": "Timothy Chan (timothy.chan2@mail.mcgill.ca)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/timothy-chan2/tinyapp/issues"
