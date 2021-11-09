@@ -10,6 +10,9 @@ const urlDatabase = {
 // Tells Express app to use EJS as its templating engine
 app.set("view engine", "ejs");
 
+//Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -17,6 +20,11 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls/new", (req, res) => {
