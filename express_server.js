@@ -34,11 +34,11 @@ const lookupEmail = (objDB, email) => {
   for (let userID in objDB) {
     if (objDB.hasOwnProperty(userID)) {
       if (objDB[userID].email === email) {
-        return true;
+        return { match: true, key: userID };
       }
     }
   }
-  return false;
+  return { match: false, key: null };
 };
 
 // Tells Express app to use EJS as its templating engine
@@ -93,7 +93,7 @@ app.post("/register", (req, res) => {
   // Registration error if unfilled field or email already exists in DB
   if (req.body.email === "" || req.body.password === "") {
     res.status(400);
-  } else if (lookupEmail(users, req.body.email) === true) {
+  } else if (lookupEmail(users, req.body.email).match === true) {
     res.status(400);
   } else {
     userRandomID = generateRandomString();
@@ -117,9 +117,17 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  //Set a cookie to username entered by user
-  res.cookie("username", req.body.username);
-  res.redirect('/urls');
+  const { match, key } = lookupEmail(users, req.body.email);
+  
+  if (match === false) {
+    res.status(403);
+  } else if (users[key].password !== req.body.password) {
+    res.status(403);
+  } else {
+    //Set a cookie to username entered by user
+    res.cookie("user_id", key);
+    res.redirect('/urls');
+  }
 });
 
 app.post("/logout", (req, res) => {
