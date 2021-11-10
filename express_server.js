@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -34,32 +35,7 @@ app.set("view engine", "ejs");
 //Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.post("/login", (req, res) => {
-  //Set a cookie to username entered by user
-  res.cookie("username", req.body.username);
-  res.redirect('/urls');
-});
-
-app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
-  res.render("urls_index", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  const genShortURL = generateRandomString();
-
-  console.log(req.body);  // Log the POST request body to the console
-  urlDatabase[genShortURL] = req.body.longURL;
-  res.redirect(`/urls/${genShortURL}`);
-});
-
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-});
+app.use(cookieParser());
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
@@ -73,8 +49,19 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"]
+  };
   res.render("urls_show", templateVars);
+});
+
+app.get("/urls/new", (req, res) => {
+  const templateVars = {
+    username: req.cookies["username"]
+  }
+  res.render("urls_new", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -83,12 +70,38 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post("/login", (req, res) => {
+  //Set a cookie to username entered by user
+  res.cookie("username", req.body.username);
+  res.redirect('/urls');
+});
+
+app.get("/urls", (req, res) => {
+  const templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+  res.render("urls_index", templateVars);
+});
+
+app.post("/urls", (req, res) => {
+  const genShortURL = generateRandomString();
+
+  console.log(req.body);  // Log the POST request body to the console
+  urlDatabase[genShortURL] = req.body.longURL;
+  res.redirect(`/urls/${genShortURL}`);
+});
+
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
+});
+
+app.get("/", (req, res) => {
+  res.send("Hello!");
 });
 
 app.listen(PORT, () => {
