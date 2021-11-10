@@ -92,9 +92,9 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   // Registration error if unfilled field or email already exists in DB
   if (req.body.email === "" || req.body.password === "") {
-    res.statusCode = 400;
+    res.status(400);
   } else if (lookupEmail(users, req.body.email) === true) {
-    res.statusCode = 400;
+    res.status(400);
   } else {
     userRandomID = generateRandomString();
     
