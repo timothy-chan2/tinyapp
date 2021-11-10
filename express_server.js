@@ -27,8 +27,18 @@ const generateRandomString = () => {
       randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
     }
   }
-
   return randomString;
+};
+
+const lookupEmail = (objDB, email) => {
+  for (let userID in objDB) {
+    if (objDB.hasOwnProperty(userID)) {
+      if (objDB[userID].email === email) {
+        return true;
+      }
+    }
+  }
+  return false;
 };
 
 // Tells Express app to use EJS as its templating engine
@@ -80,16 +90,23 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  userRandomID = generateRandomString();
-  
-  users[userRandomID] = {
-    id: userRandomID,
-    email: req.body.email,
-    password: req.body.password
-  };
+  // Registration error if unfilled field or email already exists in DB
+  if (req.body.email === "" || req.body.password === "") {
+    res.statusCode = 400;
+  } else if (lookupEmail(users, req.body.email) === true) {
+    res.statusCode = 400;
+  } else {
+    userRandomID = generateRandomString();
+    
+    users[userRandomID] = {
+      id: userRandomID,
+      email: req.body.email,
+      password: req.body.password
+    };
 
-  res.cookie("user_id", userRandomID);
-  res.redirect('/urls');
+    res.cookie("user_id", userRandomID);
+    res.redirect('/urls');
+  }
 });
 
 app.post("/login", (req, res) => {
