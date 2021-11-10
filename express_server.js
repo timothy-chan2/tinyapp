@@ -8,25 +8,27 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {};
+
 const generateRandomString = () => {
-  let shortURL = "";
+  let randomString = "";
 
   for (let i = 0; i < 6; i++) {
     // Random number: 0, 1, or 2
     let rand = Math.floor(Math.random() * 3);
     
     if (rand === 0) {
-      shortURL += Math.floor(Math.random() * 9);
+      randomString += Math.floor(Math.random() * 9);
     } else if (rand === 1) {
       // Uppercase letters
-      shortURL += String.fromCharCode(Math.floor((Math.random() * 26) + 65));
+      randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 65));
     } else {
       // Lowercase letters
-      shortURL += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
+      randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
     }
   }
 
-  return shortURL;
+  return randomString;
 };
 
 // Tells Express app to use EJS as its templating engine
@@ -52,14 +54,14 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_new", templateVars);
 });
@@ -72,9 +74,22 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("register", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  userRandomID = generateRandomString();
+  
+  users[userRandomID] = {
+    id: userRandomID,
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  res.cookie("user_id", userRandomID);
+  res.redirect('/urls');
 });
 
 app.post("/login", (req, res) => {
@@ -84,15 +99,15 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  //Clear a username as a cookie
-  res.clearCookie("username");
+  //Clears the userID cookie
+  res.clearCookie("user_id");
   res.redirect('/urls');
 });
 
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
 });
