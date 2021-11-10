@@ -15,7 +15,8 @@
     "shorten",
     "URL",
     "node",
-    "express"
+    "express",
+    "ejs"
   ],
   "author": "Timothy Chan (timothy.chan2@mail.mcgill.ca)",
   "license": "ISC",

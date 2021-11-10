@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
+  <title>TinyApp - Registration</title>
 </head>
 
 <body>
@@ -13,8 +16,8 @@
   <div class="card text-center">
       <div class="card-header"></div>
     <div class="card-footer text-muted"></div>
+    <h1>Create Account</h1>
     <form method="POST" action="/register">
-      <h1>Registration</h1>
       <div style="display: grid; justify-content: center">
         <div style="display: flex; justify-content: end; align-items: center; left: 500px">
           <label for="email">E-mail:</label>
@@ -24,7 +27,7 @@
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" style="width: 250px; margin: 1em">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Register</button>
       </div>
     </form>
   </div>

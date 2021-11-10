@@ -32,10 +32,8 @@ const generateRandomString = () => {
 
 const lookupEmail = (objDB, email) => {
   for (let userID in objDB) {
-    if (objDB.hasOwnProperty(userID)) {
-      if (objDB[userID].email === email) {
-        return { match: true, key: userID };
-      }
+    if (objDB[userID].email === email) {
+      return { match: true, key: userID };
     }
   }
   return { match: false, key: null };
@@ -48,6 +46,13 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+
+app.get("/urls/new", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]]
+  };
+  res.render("urls_new", templateVars);
+});
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
@@ -67,13 +72,6 @@ app.get("/urls/:shortURL", (req, res) => {
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
-});
-
-app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("urls_new", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -96,7 +94,7 @@ app.post("/register", (req, res) => {
   } else if (lookupEmail(users, req.body.email).match === true) {
     res.status(400);
   } else {
-    userRandomID = generateRandomString();
+    const userRandomID = generateRandomString();
     
     users[userRandomID] = {
       id: userRandomID,
@@ -124,7 +122,7 @@ app.post("/login", (req, res) => {
   } else if (users[key].password !== req.body.password) {
     res.status(403);
   } else {
-    //Set a cookie to username entered by user
+    //Set a cookie to generated userID
     res.cookie("user_id", key);
     res.redirect('/urls');
   }
