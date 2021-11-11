@@ -3,16 +3,16 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; // default port 8080
 
-const urlDatabase = {
-  "b2xVn2": {
+const urlDatabase = {};
+  /*"b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
     userID: "aJ48lW"
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
     userID: "aJ48lW"
-  }
-};
+  }*/
+
 
 const users = {};
 
@@ -43,6 +43,17 @@ const lookupEmail = (objDB, email) => {
     }
   }
   return { match: false, key: null };
+};
+
+const urlsForUser = (id) => {
+  let filteredUrlDB = {};
+
+  for (let urlID in urlDatabase) {
+    if (id === urlDatabase[urlID].userID) {
+      filteredUrlDB[urlID] = urlDatabase[urlID];
+    }
+  }
+  return filteredUrlDB;
 };
 
 // Tells Express app to use EJS as its templating engine
@@ -158,8 +169,10 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  const filteredDB = urlsForUser(req.cookies["user_id"])
+  
   const templateVars = {
-    urls: urlDatabase,
+    urls: filteredDB,
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_index", templateVars);
@@ -169,7 +182,10 @@ app.post("/urls", (req, res) => {
   const genShortURL = generateRandomString();
 
   console.log(req.body);  // Log the POST request body to the console
+  urlDatabase[genShortURL] = {};
   urlDatabase[genShortURL].longURL = req.body.longURL;
+  urlDatabase[genShortURL].userID = req.cookies["user_id"];
+  console.log(urlDatabase); // Just to see what it looks like
   res.redirect(`/urls/${genShortURL}`);
 });
 
