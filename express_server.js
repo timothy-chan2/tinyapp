@@ -178,16 +178,20 @@ app.post("/register", (req, res) => {
     res.status(400).send('Bad Request: Account already exists');
   } else {
     const userRandomID = generateRandomString();
-    const hashedPassword = bcrypt.hashSync(req.body.password, 10);
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+      if (err) {
+        res.send('Error messsage: ', err);
+      } else {
+        users[userRandomID] = {
+          id: userRandomID,
+          email: req.body.email,
+          password: hash
+        };
 
-    users[userRandomID] = {
-      id: userRandomID,
-      email: req.body.email,
-      password: hashedPassword
-    };
-
-    res.cookie("user_id", userRandomID);
-    res.redirect('/urls');
+        res.cookie("user_id", userRandomID);
+        res.redirect('/urls');
+      }
+    });
   }
 });
 
@@ -203,13 +207,19 @@ app.post("/login", (req, res) => {
   
   if (match === false) {
     res.status(403).send('Forbidden: Account does not exist');
-  } else if (bcrypt.compareSync(req.body.password, users[key].password) === false) {
-    res.status(403).send('Forbidden: Incorrect password');
-  } else {
-    //Set a cookie to generated userID
-    res.cookie("user_id", key);
-    res.redirect('/urls');
   }
+  
+  bcrypt.compare(req.body.password, users[key].password, (err, result) => {
+    if (err) {
+      res.send('Error messsage: ', err);
+    } else if (result) {
+      //Set a cookie to generated userID
+      res.cookie("user_id", key);
+      res.redirect('/urls');
+    } else {
+      res.status(403).send('Forbidden: Incorrect password');
+    }
+  });
 });
 
 app.post("/logout", (req, res) => {
@@ -236,6 +246,7 @@ app.post("/urls", (req, res) => {
   urlDatabase[genShortURL].longURL = req.body.longURL;
   urlDatabase[genShortURL].userID = req.cookies["user_id"];
   console.log(urlDatabase); // Just to see what it looks like
+  console.log(users);
   res.redirect(`/urls/${genShortURL}`);
 });
 
