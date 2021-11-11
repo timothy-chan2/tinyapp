@@ -7,4 +7,4 @@ const lookupEmail = (objDB, email) => {
   return { match: false, key: null };
 };
 
-module.exports = { lookupEmail }
+module.exports = { lookupEmail };

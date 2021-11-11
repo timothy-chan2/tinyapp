@@ -1,39 +1,28 @@
 const { lookupEmail } = require('./helpers');
 
 const express = require("express");
-//const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 
 const urlDatabase = {};
-  /*"b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "aJ48lW"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "aJ48lW"
-  }*/
-
-
 const users = {};
 
 const generateRandomString = () => {
   let randomString = "";
 
   for (let i = 0; i < 6; i++) {
-    // Random number: 0, 1, or 2
+    // Generate a random integer number: 0, 1, or 2
     let rand = Math.floor(Math.random() * 3);
     
     if (rand === 0) {
       randomString += Math.floor(Math.random() * 9);
     } else if (rand === 1) {
-      // Uppercase letters
+      // Add a random uppercase letters
       randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 65));
     } else {
-      // Lowercase letters
+      // Add a random lowercase letters
       randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
     }
   }
@@ -57,8 +46,6 @@ app.set("view engine", "ejs");
 //Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-//app.use(cookieParser());
-
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2']
@@ -68,7 +55,7 @@ app.get("/urls/new", (req, res) => {
   if (!users[req.session.user_id]) {
     res.status(401);
     res.redirect("/login");
-  } else{
+  } else {
     const templateVars = {
       user: users[req.session.user_id]
     };
@@ -170,7 +157,7 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  // Registration error if unfilled field or email already exists in DB
+  // Registration errors
   if (req.body.email === "" || req.body.password === "") {
     res.status(400).send('Bad Request: Missing email or password');
   } else if (lookupEmail(users, req.body.email).match === true) {
@@ -222,7 +209,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  //Clears the userID cookie
+  //Clears the user_id cookie
   req.session = null;
   res.redirect('/urls');
 });
@@ -240,11 +227,9 @@ app.get("/urls", (req, res) => {
 app.post("/urls", (req, res) => {
   const genShortURL = generateRandomString();
 
-  console.log(req.body);  // Log the POST request body to the console
   urlDatabase[genShortURL] = {};
   urlDatabase[genShortURL].longURL = req.body.longURL;
   urlDatabase[genShortURL].userID = req.session.user_id;
-  console.log(urlDatabase); // Just to see what it looks like
   res.redirect(`/urls/${genShortURL}`);
 });
 
@@ -257,9 +242,9 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
