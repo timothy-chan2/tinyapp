@@ -4,8 +4,14 @@ const app = express();
 const PORT = 8080; // default port 8080
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "aJ48lW"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userID: "aJ48lW"
+  }
 };
 
 const users = {};
@@ -66,21 +72,21 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.fixURL;
+  urlDatabase[shortURL].longURL = req.body.fixURL;
   res.redirect("/urls");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies["user_id"]]
   };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   
   res.redirect(longURL);
 });
@@ -151,7 +157,7 @@ app.post("/urls", (req, res) => {
   const genShortURL = generateRandomString();
 
   console.log(req.body);  // Log the POST request body to the console
-  urlDatabase[genShortURL] = req.body.longURL;
+  urlDatabase[genShortURL].longURL = req.body.longURL;
   res.redirect(`/urls/${genShortURL}`);
 });
 
