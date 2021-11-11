@@ -86,9 +86,21 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
+  let match = false;
   
-  res.redirect(longURL);
+  for (let sURL in urlDatabase) {
+    if (req.params.shortURL === sURL) {
+      match = true;
+    }
+  }
+
+  if (match === false) {
+    res.status(404).send('Not Found');
+  } else {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+  
+    res.redirect(longURL);
+  }
 });
 
 app.get("/register", (req, res) => {
