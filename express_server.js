@@ -1,3 +1,5 @@
+const { lookupEmail } = require('./helpers');
+
 const express = require("express");
 //const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
@@ -36,15 +38,6 @@ const generateRandomString = () => {
     }
   }
   return randomString;
-};
-
-const lookupEmail = (objDB, email) => {
-  for (let userID in objDB) {
-    if (objDB[userID].email === email) {
-      return { match: true, key: userID };
-    }
-  }
-  return { match: false, key: null };
 };
 
 const urlsForUser = (id) => {
@@ -194,7 +187,7 @@ app.post("/register", (req, res) => {
           password: hash
         };
 
-        res.cookie("user_id", userRandomID);
+        req.session.user_id = userRandomID;
         res.redirect('/urls');
       }
     });
@@ -213,19 +206,19 @@ app.post("/login", (req, res) => {
   
   if (match === false) {
     res.status(403).send('Forbidden: Account does not exist');
+  } else {
+    bcrypt.compare(req.body.password, users[key].password, (err, result) => {
+      if (err) {
+        res.send('Error messsage: ', err);
+      } else if (result) {
+        //Set a cookie to generated userID
+        req.session.user_id = key;
+        res.redirect('/urls');
+      } else {
+        res.status(403).send('Forbidden: Incorrect password');
+      }
+    });
   }
-  
-  bcrypt.compare(req.body.password, users[key].password, (err, result) => {
-    if (err) {
-      res.send('Error messsage: ', err);
-    } else if (result) {
-      //Set a cookie to generated userID
-      req.session.user_id = key;
-      res.redirect('/urls');
-    } else {
-      res.status(403).send('Forbidden: Incorrect password');
-    }
-  });
 });
 
 app.post("/logout", (req, res) => {
