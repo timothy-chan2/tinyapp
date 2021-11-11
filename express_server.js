@@ -95,9 +95,9 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   // Registration error if unfilled field or email already exists in DB
   if (req.body.email === "" || req.body.password === "") {
-    res.status(400);
+    res.status(400).send('Bad Request: Missing email or password');
   } else if (lookupEmail(users, req.body.email).match === true) {
-    res.status(400);
+    res.status(400).send('Bad Request: Account already exists');
   } else {
     const userRandomID = generateRandomString();
     
@@ -123,9 +123,9 @@ app.post("/login", (req, res) => {
   const { match, key } = lookupEmail(users, req.body.email);
   
   if (match === false) {
-    res.status(403);
+    res.status(403).send('Forbidden: Account does not exist');
   } else if (users[key].password !== req.body.password) {
-    res.status(403);
+    res.status(403).send('Forbidden: Incorrect password');
   } else {
     //Set a cookie to generated userID
     res.cookie("user_id", key);
