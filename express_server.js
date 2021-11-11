@@ -1,5 +1,6 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080; // default port 8080
@@ -63,7 +64,12 @@ app.set("view engine", "ejs");
 //Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cookieParser());
+//app.use(cookieParser());
+
+app.use(cookieSession({
+  name: 'session',
+  keys: ['key1', 'key2']
+}));
 
 app.get("/urls/new", (req, res) => {
   if (!users[req.cookies["user_id"]]) {
