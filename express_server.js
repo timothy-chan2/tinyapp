@@ -72,19 +72,19 @@ app.use(cookieSession({
 }));
 
 app.get("/urls/new", (req, res) => {
-  if (!users[req.cookies["user_id"]]) {
+  if (!users[req.session.user_id]) {
     res.status(401);
     res.redirect("/login");
   } else{
     const templateVars = {
-      user: users[req.cookies["user_id"]]
+      user: users[req.session.user_id]
     };
     res.render("urls_new", templateVars);
   }
 });
 
 app.get("/urls/:shortURL/delete", (req, res) => {
-  const filteredDB = urlsForUser(req.cookies["user_id"]);
+  const filteredDB = urlsForUser(req.session.user_id);
   
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.status(400).send('Bad Request: Short URL does not exist');
@@ -96,7 +96,7 @@ app.get("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const filteredDB = urlsForUser(req.cookies["user_id"]);
+  const filteredDB = urlsForUser(req.session.user_id);
   
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.status(400).send('Bad Request: Short URL does not exist');
@@ -109,7 +109,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.get("/urls/:shortURL/edit", (req, res) => {
-  const filteredDB = urlsForUser(req.cookies["user_id"]);
+  const filteredDB = urlsForUser(req.session.user_id);
   
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.status(400).send('Bad Request: Short URL does not exist');
@@ -121,7 +121,7 @@ app.get("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  const filteredDB = urlsForUser(req.cookies["user_id"]);
+  const filteredDB = urlsForUser(req.session.user_id);
   
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.status(400).send('Bad Request: Short URL does not exist');
@@ -135,7 +135,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const filteredDB = urlsForUser(req.cookies["user_id"])
+  const filteredDB = urlsForUser(req.session.user_id);
   
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.status(400).send('Bad Request: Short URL does not exist');
@@ -145,7 +145,7 @@ app.get("/urls/:shortURL", (req, res) => {
     const templateVars = {
       shortURL: req.params.shortURL,
       longURL: filteredDB[req.params.shortURL].longURL,
-      user: users[req.cookies["user_id"]]
+      user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
   }
@@ -171,7 +171,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/register", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: users[req.session.user_id]
   };
   res.render("register", templateVars);
 });
@@ -203,7 +203,7 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: users[req.session.user_id]
   };
   res.render("login", templateVars);
 });
@@ -220,7 +220,7 @@ app.post("/login", (req, res) => {
       res.send('Error messsage: ', err);
     } else if (result) {
       //Set a cookie to generated userID
-      res.cookie("user_id", key);
+      req.session.user_id = key;
       res.redirect('/urls');
     } else {
       res.status(403).send('Forbidden: Incorrect password');
@@ -230,16 +230,16 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   //Clears the userID cookie
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect('/urls');
 });
 
 app.get("/urls", (req, res) => {
-  const filteredDB = urlsForUser(req.cookies["user_id"])
+  const filteredDB = urlsForUser(req.session.user_id);
   
   const templateVars = {
     urls: filteredDB,
-    user: users[req.cookies["user_id"]]
+    user: users[req.session.user_id]
   };
   res.render("urls_index", templateVars);
 });
@@ -250,9 +250,8 @@ app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
   urlDatabase[genShortURL] = {};
   urlDatabase[genShortURL].longURL = req.body.longURL;
-  urlDatabase[genShortURL].userID = req.cookies["user_id"];
+  urlDatabase[genShortURL].userID = req.session.user_id;
   console.log(urlDatabase); // Just to see what it looks like
-  console.log(users);
   res.redirect(`/urls/${genShortURL}`);
 });
 
