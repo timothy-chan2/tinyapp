@@ -48,10 +48,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("urls_new", templateVars);
+  if (!users[req.cookies["user_id"]]) {
+    res.status(401);
+    res.redirect("/login");
+  } else{
+    const templateVars = {
+      user: users[req.cookies["user_id"]]
+    };
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
