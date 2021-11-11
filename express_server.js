@@ -88,12 +88,18 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.cookies["user_id"]]
-  };
-  res.render("urls_show", templateVars);
+  const filteredDB = urlsForUser(req.cookies["user_id"])
+  
+  if (filteredDB[req.params.shortURL] === undefined) {
+    res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
+  } else {
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: filteredDB[req.params.shortURL].longURL,
+      user: users[req.cookies["user_id"]]
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
