@@ -191,7 +191,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.redirect('/urls');
+  if (!users[req.session.user_id]) {
+    res.redirect("/login");
+  } else {
+    res.redirect('/urls');
+  }
 });
 
 app.listen(PORT, () => {
