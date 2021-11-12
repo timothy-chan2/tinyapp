@@ -15,18 +15,20 @@ const generateRandomString = () => {
     let rand = Math.floor(Math.random() * 3);
     
     if (rand === 0) {
+      // Add a random number
       randomString += Math.floor(Math.random() * 9);
     } else if (rand === 1) {
-      // Add a random uppercase letters
+      // Add a random uppercase letter
       randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 65));
     } else {
-      // Add a random lowercase letters
+      // Add a random lowercase letter
       randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
     }
   }
   return randomString;
 };
 
+// Returns a filtered database with only the entries of the signed in user
 const urlsForUser = (id, urlDatabase) => {
   let filteredUrlDB = {};
 
@@ -38,6 +40,7 @@ const urlsForUser = (id, urlDatabase) => {
   return filteredUrlDB;
 };
 
+// Uses the filtered database to determine which error message to show the user or if user is allowed to access then return true
 const showErrorMessage = (req, res, urlDatabase) => {
   const filteredDB = urlsForUser(req.session.user_id, urlDatabase);
   

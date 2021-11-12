@@ -20,7 +20,9 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 
+// To add new entry for URL
 app.get("/urls/new", (req, res) => {
+  // If user is not logged in (no cookie)
   if (!users[req.session.user_id]) {
     res.status(401);
     res.redirect("/login");
@@ -32,6 +34,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// To prevent users from deleting entries using this endpoint
 app.get("/urls/:shortURL/delete", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
 
@@ -40,6 +43,7 @@ app.get("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
+// To delete entries using the Delete button
 app.post("/urls/:shortURL/delete", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
   
@@ -49,6 +53,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
+// To prevent users from editing entries using this endpoint
 app.get("/urls/:shortURL/edit", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
   
@@ -57,6 +62,7 @@ app.get("/urls/:shortURL/edit", (req, res) => {
   }
 });
 
+// To edit a URL using the Edit button
 app.post("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
   
@@ -67,6 +73,7 @@ app.post("/urls/:shortURL", (req, res) => {
   }
 });
 
+// To display the page where a user can view & edit their previously created URL
 app.get("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
 
@@ -80,6 +87,7 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
+// To redirect to long URL by using the short URL
 app.get("/u/:shortURL", (req, res) => {
   let match = false;
   
@@ -98,7 +106,9 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
+// To display the account registration page
 app.get("/register", (req, res) => {
+  // If user is logged in (cookie present)
   if (users[req.session.user_id]) {
     res.redirect("/urls");
   } else {
@@ -109,6 +119,7 @@ app.get("/register", (req, res) => {
   }
 });
 
+// To save the new user information including hashed password in the users object then redirect to main page
 app.post("/register", (req, res) => {
   // Registration errors
   if (req.body.email === "" || req.body.password === "") {
@@ -134,7 +145,9 @@ app.post("/register", (req, res) => {
   }
 });
 
+// To display the account login page
 app.get("/login", (req, res) => {
+  // If user is logged in (cookie present)
   if (users[req.session.user_id]) {
     res.redirect("/urls");
   } else {
@@ -145,6 +158,7 @@ app.get("/login", (req, res) => {
   }
 });
 
+// To set the hashed user_id cookie if login was successful
 app.post("/login", (req, res) => {
   const { match, key } = lookupEmail(users, req.body.email);
   
@@ -165,12 +179,14 @@ app.post("/login", (req, res) => {
   }
 });
 
+// To delete the user_id cookie upon logout
 app.post("/logout", (req, res) => {
   //Clears the user_id cookie
   req.session = null;
   res.redirect('/urls');
 });
 
+// To display the main page with all the user's created short URLs
 app.get("/urls", (req, res) => {
   const filteredDB = urlsForUser(req.session.user_id, urlDatabase);
   
@@ -181,6 +197,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// To generate a short URL for newly added long URL and associate it with the user_id
 app.post("/urls", (req, res) => {
   const genShortURL = generateRandomString();
 
@@ -190,15 +207,9 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${genShortURL}`);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
+// The root endpoint redirects to the login page if not signed in and the main page if signed in
 app.get("/", (req, res) => {
+  // If user is not logged in (no cookie)
   if (!users[req.session.user_id]) {
     res.redirect("/login");
   } else {
