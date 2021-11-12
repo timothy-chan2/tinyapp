@@ -99,10 +99,14 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = {
-    user: users[req.session.user_id]
-  };
-  res.render("register", templateVars);
+  if (users[req.session.user_id]) {
+    res.redirect("/urls");
+  } else {
+    const templateVars = {
+      user: users[req.session.user_id]
+    };
+    res.render("register", templateVars);
+  }
 });
 
 app.post("/register", (req, res) => {
