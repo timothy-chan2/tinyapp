@@ -57,7 +57,7 @@ app.get("/urls/:shortURL/edit", (req, res) => {
   }
 });
 
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.post("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
   
   if (noErrors) {
