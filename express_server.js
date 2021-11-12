@@ -1,4 +1,4 @@
-const { lookupEmail } = require('./helpers');
+const { lookupEmail, generateRandomString, urlsForUser, showErrorMessage } = require('./helpers');
 
 const express = require("express");
 const cookieSession = require('cookie-session');
@@ -8,37 +8,6 @@ const PORT = 8080;
 
 const urlDatabase = {};
 const users = {};
-
-const generateRandomString = () => {
-  let randomString = "";
-
-  for (let i = 0; i < 6; i++) {
-    // Generate a random integer number: 0, 1, or 2
-    let rand = Math.floor(Math.random() * 3);
-    
-    if (rand === 0) {
-      randomString += Math.floor(Math.random() * 9);
-    } else if (rand === 1) {
-      // Add a random uppercase letters
-      randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 65));
-    } else {
-      // Add a random lowercase letters
-      randomString += String.fromCharCode(Math.floor((Math.random() * 26) + 97));
-    }
-  }
-  return randomString;
-};
-
-const urlsForUser = (id) => {
-  let filteredUrlDB = {};
-
-  for (let urlID in urlDatabase) {
-    if (id === urlDatabase[urlID].userID) {
-      filteredUrlDB[urlID] = urlDatabase[urlID];
-    }
-  }
-  return filteredUrlDB;
-};
 
 // Tells Express app to use EJS as its templating engine
 app.set("view engine", "ejs");
@@ -64,67 +33,47 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL/delete", (req, res) => {
-  const filteredDB = urlsForUser(req.session.user_id);
-  
-  if (urlDatabase[req.params.shortURL] === undefined) {
-    res.status(400).send('Bad Request: Short URL does not exist');
-  } else if (filteredDB[req.params.shortURL] === undefined) {
-    res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
-  } else {
+  const noErrors = showErrorMessage(req, res, urlDatabase);
+
+  if (noErrors) {
     res.send('Please use the Delete button at /urls to delete the short URL');
   }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const filteredDB = urlsForUser(req.session.user_id);
+  const noErrors = showErrorMessage(req, res, urlDatabase);
   
-  if (urlDatabase[req.params.shortURL] === undefined) {
-    res.status(400).send('Bad Request: Short URL does not exist');
-  } else if (filteredDB[req.params.shortURL] === undefined) {
-    res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
-  } else {
+  if (noErrors) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   }
 });
 
 app.get("/urls/:shortURL/edit", (req, res) => {
-  const filteredDB = urlsForUser(req.session.user_id);
+  const noErrors = showErrorMessage(req, res, urlDatabase);
   
-  if (urlDatabase[req.params.shortURL] === undefined) {
-    res.status(400).send('Bad Request: Short URL does not exist');
-  } else if (filteredDB[req.params.shortURL] === undefined) {
-    res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
-  } else {
+  if (noErrors) {
     res.send('Please use the Edit button at /urls to go to the edit page');
   }
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  const filteredDB = urlsForUser(req.session.user_id);
+  const noErrors = showErrorMessage(req, res, urlDatabase);
   
-  if (urlDatabase[req.params.shortURL] === undefined) {
-    res.status(400).send('Bad Request: Short URL does not exist');
-  } else if (filteredDB[req.params.shortURL] === undefined) {
-    res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
-  } else {
+  if (noErrors) {
     const shortURL = req.params.shortURL;
-    filteredDB[shortURL].longURL = req.body.fixURL;
+    urlDatabase[shortURL].longURL = req.body.fixURL;
     res.redirect("/urls");
   }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const filteredDB = urlsForUser(req.session.user_id);
-  
-  if (urlDatabase[req.params.shortURL] === undefined) {
-    res.status(400).send('Bad Request: Short URL does not exist');
-  } else if (filteredDB[req.params.shortURL] === undefined) {
-    res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
-  } else {
+  const noErrors = showErrorMessage(req, res, urlDatabase);
+
+  if (noErrors) {
     const templateVars = {
       shortURL: req.params.shortURL,
-      longURL: filteredDB[req.params.shortURL].longURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
       user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
@@ -215,7 +164,7 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const filteredDB = urlsForUser(req.session.user_id);
+  const filteredDB = urlsForUser(req.session.user_id, urlDatabase);
   
   const templateVars = {
     urls: filteredDB,
