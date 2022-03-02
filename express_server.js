@@ -38,15 +38,6 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
-// To prevent users from deleting entries using this endpoint
-app.get("/urls/:shortURL/delete", (req, res) => {
-  const noErrors = showErrorMessage(req, res, urlDatabase);
-
-  if (noErrors) {
-    res.send('Please use the Delete button at /urls to delete the short URL');
-  }
-});
-
 // To delete entries using the Delete button
 app.delete("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
