@@ -1,6 +1,7 @@
 const { lookupEmail, generateRandomString, urlsForUser, showErrorMessage } = require('./helpers');
 
 const express = require("express");
+const methodOverride = require('method-override');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const app = express();
@@ -8,6 +9,9 @@ const PORT = 8080;
 
 const urlDatabase = {};
 const users = {};
+
+// Override with POST having ?_method=DELETE or ?_method=PUT
+app.use(methodOverride('_method'));
 
 // Tells Express app to use EJS as its templating engine
 app.set("view engine", "ejs");
