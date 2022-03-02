@@ -48,7 +48,7 @@ app.get("/urls/:shortURL/delete", (req, res) => {
 });
 
 // To delete entries using the Delete button
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
   
   if (noErrors) {
