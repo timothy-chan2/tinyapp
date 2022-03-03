@@ -48,15 +48,6 @@ app.delete("/urls/:shortURL", (req, res) => {
   }
 });
 
-// To prevent users from editing entries using this endpoint
-app.get("/urls/:shortURL/edit", (req, res) => {
-  const noErrors = showErrorMessage(req, res, urlDatabase);
-  
-  if (noErrors) {
-    res.send('Please use the Edit button at /urls to go to the edit page');
-  }
-});
-
 // To edit a URL using the Edit button
 app.post("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
