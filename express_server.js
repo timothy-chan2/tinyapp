@@ -166,7 +166,7 @@ app.post("/login", (req, res) => {
 });
 
 // To delete the user_id cookie upon logout
-app.post("/logout", (req, res) => {
+app.put("/logout", (req, res) => {
   //Clears the user_id cookie
   req.session = null;
   res.redirect('/urls');
