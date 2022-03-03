@@ -49,7 +49,7 @@ app.delete("/urls/:shortURL", (req, res) => {
 });
 
 // To edit a URL using the Edit button
-app.post("/urls/:shortURL", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
   
   if (noErrors) {
