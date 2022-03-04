@@ -64,9 +64,14 @@ app.get("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
 
   if (noErrors) {
+    if (!urlDatabase[req.params.shortURL].visitCount) {
+      urlDatabase[req.params.shortURL].visitCount = 0;
+    }
+
     const templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
+      visitCount: urlDatabase[req.params.shortURL].visitCount,
       user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
@@ -89,6 +94,7 @@ app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL].longURL;
   
     res.redirect(longURL);
+    urlDatabase[req.params.shortURL].visitCount++;
   }
 });
 
