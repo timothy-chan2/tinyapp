@@ -64,7 +64,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
 
   if (noErrors) {
-    if (!urlDatabase[req.params.shortURL].visitCount) {
+    if (urlDatabase[req.params.shortURL].visitCount === undefined) {
       urlDatabase[req.params.shortURL].visitCount = 0;
     }
 
