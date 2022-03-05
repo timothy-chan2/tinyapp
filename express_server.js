@@ -67,16 +67,20 @@ app.get("/urls/:shortURL", (req, res) => {
   if (noErrors) {
     if (urlDatabase[req.params.shortURL].visitCount === undefined) {
       urlDatabase[req.params.shortURL].visitCount = 0;
+      urlDatabase[req.params.shortURL].uniqueVisitors = [];
       urlDatabase[req.params.shortURL].visitors = [];
+      urlDatabase[req.params.shortURL].visitTimes = [];
     }
 
-    uniqueVisitorCount = urlDatabase[req.params.shortURL].visitors.length;
+    uniqueVisitorCount = urlDatabase[req.params.shortURL].uniqueVisitors.length;
 
     const templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       visitCount: urlDatabase[req.params.shortURL].visitCount,
       uniqueVisitorCount: uniqueVisitorCount,
+      visitors: urlDatabase[req.params.shortURL].visitors,
+      visitTimes: urlDatabase[req.params.shortURL].visitTimes,
       user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
@@ -109,15 +113,24 @@ app.get("/u/:shortURL", (req, res) => {
     urlDatabase[req.params.shortURL].visitCount++;
     
     const updateVisitorLog = () => {
-      for (const user of urlDatabase[req.params.shortURL].visitors) {
+      for (const user of urlDatabase[req.params.shortURL].uniqueVisitors) {
         if (req.session.visitor_id === user) {
           userMatch = true;
         }
       }
     
       if (userMatch === false) {
-        urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id);
+        urlDatabase[req.params.shortURL].uniqueVisitors.push(req.session.visitor_id);
       }
+
+      urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id);
+
+      //Get unixtimestamp
+      const current_timestamp = new Date().getTime();
+      
+      // Convert to DateTime
+      const date = new Date(current_timestamp);
+      urlDatabase[req.params.shortURL].visitTimes.push(date);
     }
 
     updateVisitorLog();

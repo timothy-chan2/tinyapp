@@ -28,6 +28,24 @@
       <input type="text" id="fixURL" name="fixURL" placeholder="http://" style="width: 300px; margin: 1em">
       <button type="submit" class="btn btn-primary">Update</button>
     </form>
+    <div class="card-footer text-muted"></div>
+    <h2>Visitors</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Visitor ID</th>
+          <th scope="col">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const ind in visitors) { %>
+          <tr>
+            <td><%= visitors[ind] %></td>
+          <td><%= visitTimes[ind] %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
   </div>
 
   <!-- Bootstrap JS -->
