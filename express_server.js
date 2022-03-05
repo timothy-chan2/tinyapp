@@ -62,16 +62,21 @@ app.put("/urls/:shortURL", (req, res) => {
 // To display the page where a user can view & edit their previously created URL
 app.get("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
+  let uniqueVisitorCount;
 
   if (noErrors) {
     if (urlDatabase[req.params.shortURL].visitCount === undefined) {
       urlDatabase[req.params.shortURL].visitCount = 0;
+      urlDatabase[req.params.shortURL].visitors = [];
     }
+
+    uniqueVisitorCount = urlDatabase[req.params.shortURL].visitors.length;
 
     const templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
       visitCount: urlDatabase[req.params.shortURL].visitCount,
+      uniqueVisitorCount: uniqueVisitorCount,
       user: users[req.session.user_id]
     };
     res.render("urls_show", templateVars);
@@ -80,21 +85,43 @@ app.get("/urls/:shortURL", (req, res) => {
 
 // To redirect to long URL by using the short URL
 app.get("/u/:shortURL", (req, res) => {
-  let match = false;
+  let urlMatch = false;
+  let userMatch = false;
   
   for (let sURL in urlDatabase) {
     if (req.params.shortURL === sURL) {
-      match = true;
+      urlMatch = true;
     }
   }
 
-  if (match === false) {
+  if (urlMatch === false) {
     res.status(404).send('Not Found');
   } else {
     const longURL = urlDatabase[req.params.shortURL].longURL;
   
     res.redirect(longURL);
     urlDatabase[req.params.shortURL].visitCount++;
+    
+    const updateVisitorLog = () => {
+      if (userMatch === false) {
+        urlDatabase[req.params.shortURL].visitors.push(req.session.user_id);
+      }
+    }
+    
+    const userMatchCheck = (cb) => {
+      for (const user of urlDatabase[req.params.shortURL].visitors) {
+        if (req.session.user_id === user) {
+          console.log('matched');
+          userMatch = true;
+        }
+      }
+    
+      if (userMatch === false) {
+        urlDatabase[req.params.shortURL].visitors.push(req.session.user_id);
+      }
+    }
+
+    userMatchCheck(updateVisitorLog);
   }
 });
 
