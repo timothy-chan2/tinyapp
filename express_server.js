@@ -98,19 +98,25 @@ app.get("/u/:shortURL", (req, res) => {
     res.status(404).send('Not Found');
   } else {
     const longURL = urlDatabase[req.params.shortURL].longURL;
+    
+    if (!req.session.user_id && !req.session.visitor_id) {
+      req.session.visitor_id = generateRandomString();
+    } else if (req.session.user_id) {
+      req.session.visitor_id = req.session.user_id;
+    }
   
     res.redirect(longURL);
     urlDatabase[req.params.shortURL].visitCount++;
     
     const updateVisitorLog = () => {
       for (const user of urlDatabase[req.params.shortURL].visitors) {
-        if (req.session.user_id === user) {
+        if (req.session.visitor_id === user) {
           userMatch = true;
         }
       }
     
       if (userMatch === false) {
-        urlDatabase[req.params.shortURL].visitors.push(req.session.user_id);
+        urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id);
       }
     }
 
