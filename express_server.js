@@ -103,15 +103,8 @@ app.get("/u/:shortURL", (req, res) => {
     urlDatabase[req.params.shortURL].visitCount++;
     
     const updateVisitorLog = () => {
-      if (userMatch === false) {
-        urlDatabase[req.params.shortURL].visitors.push(req.session.user_id);
-      }
-    }
-    
-    const userMatchCheck = (cb) => {
       for (const user of urlDatabase[req.params.shortURL].visitors) {
         if (req.session.user_id === user) {
-          console.log('matched');
           userMatch = true;
         }
       }
@@ -121,7 +114,7 @@ app.get("/u/:shortURL", (req, res) => {
       }
     }
 
-    userMatchCheck(updateVisitorLog);
+    updateVisitorLog();
   }
 });
 
