@@ -30,23 +30,25 @@
     </form>
     <% if (visitCount > 0) { %>
       <div class="card-footer text-muted"></div>
-      <h2>Visitors</h2>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Visitor ID</th>
-            <th scope="col">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for (const ind in visitors) { %>
+      <div style="padding: 1em;">
+        <h2>Visitors</h2>
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= visitors[ind] %></td>
-              <td><%= visitTimes[ind] %></td>
+              <th scope="col">Visitor ID</th>
+              <th scope="col">Date</th>
             </tr>
-          <% } %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% for (const ind in visitors) { %>
+              <tr>
+                <td><%= visitors[ind] %></td>
+                <td><%= visitTimes[ind] %></td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
     <% } %>
   </div>
 
