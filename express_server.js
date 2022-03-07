@@ -1,4 +1,10 @@
-const { lookupEmail, generateRandomString, urlsForUser, showErrorMessage, updateVisitorLog } = require('./helpers');
+const {
+  lookupEmail,
+  generateRandomString,
+  urlsForUser,
+  showErrorMessage,
+  updateVisitorLog
+} = require('./helpers');
 
 const express = require("express");
 const methodOverride = require('method-override');
