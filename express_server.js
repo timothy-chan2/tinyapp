@@ -69,7 +69,6 @@ app.put("/urls/:shortURL", (req, res) => {
 // To display the page where a user can view & edit their previously created URL
 app.get("/urls/:shortURL", (req, res) => {
   const noErrors = showErrorMessage(req, res, urlDatabase);
-  let uniqueVisitorCount;
 
   if (noErrors) {
     if (urlDatabase[req.params.shortURL].visitCount === undefined) {
@@ -79,7 +78,7 @@ app.get("/urls/:shortURL", (req, res) => {
       urlDatabase[req.params.shortURL].visitTimes = [];
     }
 
-    uniqueVisitorCount = urlDatabase[req.params.shortURL].uniqueVisitors.length;
+    const uniqueVisitorCount = urlDatabase[req.params.shortURL].uniqueVisitors.length;
 
     const templateVars = {
       shortURL: req.params.shortURL,
