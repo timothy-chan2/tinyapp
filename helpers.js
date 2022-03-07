@@ -53,9 +53,35 @@ const showErrorMessage = (req, res, urlDatabase) => {
   }
 };
 
+const updateVisitorLog = (urlDatabase, shortURL, visitorId) => {
+  let userMatch = false;
+
+  for (const user of urlDatabase[shortURL].uniqueVisitors) {
+    if (visitorId === user) {
+      userMatch = true;
+    }
+  }
+
+  if (userMatch === false) {
+    urlDatabase[shortURL].uniqueVisitors.push(visitorId);
+  }
+
+  urlDatabase[shortURL].visitors.push(visitorId);
+
+  //Get unixtimestamp
+  const current_timestamp = new Date().getTime();
+  
+  // Convert to DateTime
+  const date = new Date(current_timestamp);
+  urlDatabase[shortURL].visitTimes.push(date);
+
+  return urlDatabase;
+};
+
 module.exports = {
   lookupEmail,
   generateRandomString,
   urlsForUser,
-  showErrorMessage
+  showErrorMessage,
+  updateVisitorLog
 };
