@@ -53,7 +53,17 @@ const showErrorMessage = (req, res, urlDatabase) => {
   }
 };
 
-const updateVisitorLog = (urlDatabase, shortURL, visitorId) => {
+const getDate = () => {
+  //Get unixtimestamp
+  const current_timestamp = new Date().getTime();
+  
+  // Convert to DateTime
+  const date = new Date(current_timestamp);
+
+  return date;
+};
+
+const isUniqueVisitor = (urlDatabase, shortURL, visitorId) => {
   let userMatch = false;
 
   for (const user of urlDatabase[shortURL].uniqueVisitors) {
@@ -61,21 +71,7 @@ const updateVisitorLog = (urlDatabase, shortURL, visitorId) => {
       userMatch = true;
     }
   }
-
-  if (userMatch === false) {
-    urlDatabase[shortURL].uniqueVisitors.push(visitorId);
-  }
-
-  urlDatabase[shortURL].visitors.push(visitorId);
-
-  //Get unixtimestamp
-  const current_timestamp = new Date().getTime();
-  
-  // Convert to DateTime
-  const date = new Date(current_timestamp);
-  urlDatabase[shortURL].visitTimes.push(date);
-
-  return urlDatabase;
+  return userMatch;
 };
 
 module.exports = {
@@ -83,5 +79,6 @@ module.exports = {
   generateRandomString,
   urlsForUser,
   showErrorMessage,
-  updateVisitorLog
+  getDate,
+  isUniqueVisitor
 };

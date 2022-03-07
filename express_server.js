@@ -3,7 +3,8 @@ const {
   generateRandomString,
   urlsForUser,
   showErrorMessage,
-  updateVisitorLog
+  getDate,
+  isUniqueVisitor
 } = require('./helpers');
 
 const express = require("express");
@@ -13,7 +14,7 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const PORT = 8080;
 
-let urlDatabase = {};
+const urlDatabase = {};
 const users = {};
 
 // Override with POST having ?_method=DELETE or ?_method=PUT
@@ -96,7 +97,8 @@ app.get("/urls/:shortURL", (req, res) => {
 // To redirect to long URL by using the short URL
 app.get("/u/:shortURL", (req, res) => {
   let urlMatch = false;
-  //let userMatch = false;
+  const userMatch = isUniqueVisitor(urlDatabase, req.params.shortURL, req.session.visitor_id);
+  const date = getDate();
   
   for (let sURL in urlDatabase) {
     if (req.params.shortURL === sURL) {
@@ -118,28 +120,12 @@ app.get("/u/:shortURL", (req, res) => {
     res.redirect(longURL);
     urlDatabase[req.params.shortURL].visitCount++;
     
-    // const updateVisitorLog = () => {
-    //   for (const user of urlDatabase[req.params.shortURL].uniqueVisitors) {
-    //     if (req.session.visitor_id === user) {
-    //       userMatch = true;
-    //     }
-    //   }
-    
-    //   if (userMatch === false) {
-    //     urlDatabase[req.params.shortURL].uniqueVisitors.push(req.session.visitor_id);
-    //   }
+    if (userMatch === false) {
+      urlDatabase[req.params.shortURL].uniqueVisitors.push(req.session.visitor_id);
+    }
 
-    //   urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id);
-
-    //   //Get unixtimestamp
-    //   const current_timestamp = new Date().getTime();
-      
-    //   // Convert to DateTime
-    //   const date = new Date(current_timestamp);
-    //   urlDatabase[req.params.shortURL].visitTimes.push(date);
-    // }
-
-    urlDatabase = updateVisitorLog(urlDatabase, req.params.shortURL, req.session.visitor_id);
+    urlDatabase[req.params.shortURL].visitors.push(req.session.visitor_id);
+    urlDatabase[req.params.shortURL].visitTimes.push(date);
   }
 });
 
