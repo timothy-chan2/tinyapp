@@ -30,7 +30,7 @@ const generateRandomString = () => {
 
 // Returns a filtered database with only the entries of the signed in user
 const urlsForUser = (id, urlDatabase) => {
-  let filteredUrlDB = {};
+  const filteredUrlDB = {};
 
   for (let urlID in urlDatabase) {
     if (id === urlDatabase[urlID].userID) {
@@ -41,16 +41,18 @@ const urlsForUser = (id, urlDatabase) => {
 };
 
 // Uses the filtered database to determine which error message to show the user or if user is allowed to access then return true
-const showErrorMessage = (req, res, urlDatabase) => {
+const isNoError = (req, res, urlDatabase) => {
   const filteredDB = urlsForUser(req.session.user_id, urlDatabase);
+  let noError = false;
   
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.status(400).send('Bad Request: Short URL does not exist');
   } else if (filteredDB[req.params.shortURL] === undefined) {
     res.status(403).send('Forbidden: Short URL belongs to another user or you are not signed in');
   } else {
-    return true;
+    noError = true;
   }
+  return noError;
 };
 
 const getDate = () => {
@@ -78,7 +80,7 @@ module.exports = {
   lookupEmail,
   generateRandomString,
   urlsForUser,
-  showErrorMessage,
+  isNoError,
   getDate,
   isPastUniqueVisitor
 };

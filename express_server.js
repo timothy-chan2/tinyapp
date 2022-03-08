@@ -2,7 +2,7 @@ const {
   lookupEmail,
   generateRandomString,
   urlsForUser,
-  showErrorMessage,
+  isNoError,
   getDate,
   isPastUniqueVisitor
 } = require('./helpers');
@@ -45,7 +45,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.delete("/urls/:shortURL", (req, res) => {
-  const noErrors = showErrorMessage(req, res, urlDatabase);
+  const noErrors = isNoError(req, res, urlDatabase);
   
   if (noErrors) {
     delete urlDatabase[req.params.shortURL];
@@ -55,7 +55,7 @@ app.delete("/urls/:shortURL", (req, res) => {
 
 // To edit a URL already in the database
 app.put("/urls/:shortURL", (req, res) => {
-  const noErrors = showErrorMessage(req, res, urlDatabase);
+  const noErrors = isNoError(req, res, urlDatabase);
   
   if (noErrors) {
     const shortURL = req.params.shortURL;
@@ -65,7 +65,7 @@ app.put("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const noErrors = showErrorMessage(req, res, urlDatabase);
+  const noErrors = isNoError(req, res, urlDatabase);
 
   if (noErrors) {
     if (urlDatabase[req.params.shortURL].visitCount === undefined) {
