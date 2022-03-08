@@ -63,7 +63,7 @@ const getDate = () => {
   return date;
 };
 
-const isUniqueVisitor = (urlDatabase, shortURL, visitorId) => {
+const isPastUniqueVisitor = (urlDatabase, shortURL, visitorId) => {
   let userMatch = false;
 
   for (const user of urlDatabase[shortURL].uniqueVisitors) {
@@ -80,5 +80,5 @@ module.exports = {
   urlsForUser,
   showErrorMessage,
   getDate,
-  isUniqueVisitor
+  isPastUniqueVisitor
 };

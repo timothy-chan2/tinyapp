@@ -4,7 +4,7 @@ const {
   urlsForUser,
   showErrorMessage,
   getDate,
-  isUniqueVisitor
+  isPastUniqueVisitor
 } = require('./helpers');
 
 const express = require("express");
@@ -96,8 +96,6 @@ app.get("/urls/:shortURL", (req, res) => {
 // To redirect to long URL by using the short URL
 app.get("/u/:shortURL", (req, res) => {
   let urlMatch = false;
-  const userMatch = isUniqueVisitor(urlDatabase, req.params.shortURL, req.session.visitor_id);
-  const date = getDate();
   
   for (let sURL in urlDatabase) {
     if (req.params.shortURL === sURL) {
@@ -109,7 +107,9 @@ app.get("/u/:shortURL", (req, res) => {
     res.status(404).send('Not Found');
   } else {
     const longURL = urlDatabase[req.params.shortURL].longURL;
-    
+    const userMatch = isPastUniqueVisitor(urlDatabase, req.params.shortURL, req.session.visitor_id);
+    const date = getDate();
+
     if (!req.session.user_id && !req.session.visitor_id) {
       req.session.visitor_id = generateRandomString();
     } else if (req.session.user_id) {
