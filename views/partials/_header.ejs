@@ -31,31 +31,33 @@
   }
   
   let theme = localStorage.getItem('data-theme');
+
+  const changeThemeToDark = () => {
+    document.body.classList.add("bg-dark");
+    localStorage.setItem("data-theme", "dark");
+  }
+
+  const changeThemeToLight = () => {
+    document.body.classList.remove("bg-dark");
+    localStorage.setItem("data-theme", "light");
+  }
   
   const clickHandler = () => {
-    const element = document.body;
     if (theme === "light") {
-      element.classList.add("bg-dark");
-      localStorage.setItem("data-theme", "dark");
-      theme = localStorage.getItem('data-theme');
+      changeThemeToDark();
     } else if (theme === "dark") {
-      element.classList.remove("bg-dark");
-      localStorage.setItem("data-theme", "light");
-      theme = localStorage.getItem('data-theme');
+      changeThemeToLight();
     }
+    theme = localStorage.getItem('data-theme');
   }
 
   const checkTheme = () => {
-    const element = document.body;
     if (theme === "light") {
-      element.classList.remove("bg-dark");
-      localStorage.setItem("data-theme", "light");
-      theme = localStorage.getItem('data-theme');
+      changeThemeToLight();
     } else if (theme === "dark") {
-      element.classList.add("bg-dark");
-      localStorage.setItem("data-theme", "dark");
-      theme = localStorage.getItem('data-theme');
+      changeThemeToDark();
     }
+    theme = localStorage.getItem('data-theme');
   }
 
   checkTheme();
