@@ -74,11 +74,11 @@
         <a class="nav-item nav-link" href="/urls/new">Create a New Short Link</a>
       </div>
     </div>
-    <label class="switch">
-      <input type="checkbox">
+    <label class="switch" style="margin-right: 10px">
+      <input id="theme-button" type="checkbox">
       <span class="slider round"></span>
     </label>
-    <button id="theme-button" style="margin-right: 10px" class="btn btn-warning">Theme</button>
+    <button style="margin-right: 10px" class="btn btn-warning">Theme</button>
     <% if (user) { %>
       <form method="POST" action="/logout?_method=PUT">
         <span style="padding-right: 10px">Logged in as: <%= user.email %></span>

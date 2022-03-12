@@ -13,6 +13,7 @@
   const changeThemeToDark = () => {
     document.body.classList.add("text-light");
     document.body.classList.add("bg-dark");
+    document.getElementById("theme-button").checked = false;
     document.getElementsByTagName("main")[0].classList.add("bg-dark");
     if (document.getElementById("shortURL-link")) {
       document.getElementById("shortURL-link").classList.add("text-warning");
@@ -23,6 +24,7 @@
   const changeThemeToLight = () => {
     document.body.classList.remove("text-light");
     document.body.classList.remove("bg-dark");
+    document.getElementById("theme-button").checked = true;
     document.getElementsByTagName("main")[0].classList.remove("bg-dark");
     if (document.getElementById("shortURL-link")) {
       document.getElementById("shortURL-link").classList.remove("text-warning");
