@@ -78,7 +78,6 @@
       <input id="theme-button" type="checkbox">
       <span class="slider round"></span>
     </label>
-    <button style="margin-right: 10px" class="btn btn-warning">Theme</button>
     <% if (user) { %>
       <form method="POST" action="/logout?_method=PUT">
         <span style="padding-right: 10px">Logged in as: <%= user.email %></span>
